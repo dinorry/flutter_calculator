@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
+
         // the application has a purple toolbar. Then, without quitting the app,
         // try changing the seedColor in the colorScheme below to Colors.green
         // and then invoke "hot reload" (save your changes or press the "hot
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.dark(),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -39,20 +40,30 @@ class MyApp extends StatelessWidget {
 class CustomTextButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
+  final Color? bgcolor;
   final Color? color;
+  final double fontSize;
 
   const CustomTextButton({
     super.key,
     required this.label,
     required this.onPressed,
+    this.bgcolor,
     this.color,
+    this.fontSize = 36,
   });
   @override
   Widget build(BuildContext context) {
     return Container(
+        padding: EdgeInsetsGeometry.all(7.0),
         child: TextButton(
+          style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(bgcolor ?? Colors.grey[800])),
           onPressed: onPressed,
-          child: Text(label),
+          child: Text(label, style:
+            TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w400,
+              color: color)),
         )
     );
   }
@@ -80,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _operator = '+';
   String _memory = '0';
   int _stage = 0;
+  final Color _operandColor = Color(0xFFDC9C63);
 
   String _operation([bool rev = false]) {
     String _convertable_input = _input.replaceAll(',', '.');
@@ -221,46 +233,52 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-
-      body: Column(
-        children: [ Container(
-          alignment: Alignment.bottomRight,
-          child: Text(_input,
-          style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [ Container(
+              padding: EdgeInsetsGeometry.fromLTRB(40, 10, 40, 0),
+              alignment: Alignment.bottomRight,
+              child: Text(_input,
+              style: TextStyle(
+                  fontSize: 72,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
+              GridView.count(
+                shrinkWrap: true,
+              crossAxisCount: 4,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                CustomTextButton(onPressed: () => _onButtonPressed("AC"), label: "AC",),
+                CustomTextButton(onPressed: () => _onButtonPressed("+/-"), label: "+/-",),
+                CustomTextButton(onPressed: () => _onButtonPressed("%"), label: "%"),
+                CustomTextButton(onPressed: () => _onOperatorPressed("*"), label: "×", color: _operandColor, fontSize: 42,) ,
+                CustomTextButton(onPressed: () => _onNumberPressed("7"), label: "7"),
+                CustomTextButton(onPressed: () => _onNumberPressed("8"), label: "8"),
+                CustomTextButton(onPressed: () => _onNumberPressed("9"), label: "9"),
+                CustomTextButton(onPressed: () => _onOperatorPressed("/"), label: "÷", color: _operandColor,),
+                CustomTextButton(onPressed: () => _onNumberPressed("4"), label: "4"),
+                CustomTextButton(onPressed: () => _onNumberPressed("5"), label: "5"),
+                CustomTextButton(onPressed: () => _onNumberPressed("6"), label: "6"),
+                CustomTextButton(onPressed: () => _onOperatorPressed("-"), label: "-", color: _operandColor,),
+                CustomTextButton(onPressed: () => _onNumberPressed("1"), label: "1"),
+                CustomTextButton(onPressed: () => _onNumberPressed("2"), label: "2"),
+                CustomTextButton(onPressed: () => _onNumberPressed("3"), label: "3"),
+                CustomTextButton(onPressed: () => _onOperatorPressed("+"), label: "+", color: _operandColor,),
+                Container(),
+                CustomTextButton(onPressed: () => _onNumberPressed("0"), label: "0"),
+                CustomTextButton(onPressed: () => _onCommaPressed(), label: ","),
+                CustomTextButton(onPressed: _onEqualPressed, label: "=", color: _operandColor,),
+              ],
+                      ),
+          ]
           ),
         ),
-          Expanded(
-            child: GridView.count(
-            crossAxisCount: 4,
-            physics: NeverScrollableScrollPhysics(),
-            children: [
-              CustomTextButton(onPressed: () => _onButtonPressed("AC"), label: "AC",),
-              CustomTextButton(onPressed: () => _onButtonPressed("+/-"), label: "+/-",),
-              TextButton(onPressed: () => _onButtonPressed("%"), child: Text("%"),),
-              TextButton(onPressed: () => _onOperatorPressed("*"), child: Text("*"),),
-              TextButton(onPressed: () => _onNumberPressed("7"), child: Text("7"),),
-              TextButton(onPressed: () => _onNumberPressed("8"), child: Text("8"),),
-              TextButton(onPressed: () => _onNumberPressed("9"), child: Text("9"),),
-              TextButton(onPressed: () => _onOperatorPressed("/"), child: Text("/"),),
-              TextButton(onPressed: () => _onNumberPressed("4"), child: Text("4"),),
-              TextButton(onPressed: () => _onNumberPressed("5"), child: Text("5"),),
-              TextButton(onPressed: () => _onNumberPressed("6"), child: Text("6"),),
-              TextButton(onPressed: () => _onOperatorPressed("-"), child: Text("-"),),
-              TextButton(onPressed: () => _onNumberPressed("1"), child: Text("1"),),
-              TextButton(onPressed: () => _onNumberPressed("2"), child: Text("2"),),
-              TextButton(onPressed: () => _onNumberPressed("3"), child: Text("3"),),
-              TextButton(onPressed: () => _onOperatorPressed("+"), child: Text("+"),),
-              Container(),
-              TextButton(onPressed: () => _onNumberPressed("0"), child: Text("0"),),
-              TextButton(onPressed: () => _onCommaPressed(), child: Text(","),),
-              TextButton(onPressed: _onEqualPressed, child: Text("="),),
-            ],
-                    ),
-          ),
-      ]
       ),
     );
   }
