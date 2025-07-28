@@ -209,18 +209,6 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       });
-    } else {
-      setState(() {
-        if (_operator.isEmpty && _input.isNotEmpty) {
-          _operator = button;
-          _input = ''; // Clear input for next number
-        } else if (_operator.isNotEmpty && _input.isNotEmpty) {
-          // Here you would typically perform the calculation based on the operator
-          // and input, but for simplicity, we will just show the input as result.
-          _operator = button; // Update operator
-          _input = ''; // Clear input for next number
-        }
-      });
     }
   }
 
