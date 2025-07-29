@@ -94,7 +94,17 @@ class _MyHomePageState extends State<MyHomePage> {
   final Color _operandColor = Color(0xFFDC9C63);
   final Color _specialButtonColor = Color(0xFFFFFFFF);
 
+
+  void _backspace() {
+    if (_input.length > 1) {
+      _input = _input.substring(0, _input.length - 1);
+    } else {
+      _input = '0';
+    }
+  }
+
   String _operation([bool rev = false]) {
+    //Retunr _input - operand - _memory or reverse
     String _convertable_input = _input.replaceAll(',', '.');
     String _convertable_memory = _memory.replaceAll(',', '.');
     double _inputNum = double.tryParse(_convertable_input) ?? 0.0;
@@ -103,10 +113,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_operator == '+') {
       _result = (_memoryNum + _inputNum).toString();
     } else if (_operator == '*') {
-      _result =  (_memoryNum * _inputNum).toString();
+      _result = (_memoryNum * _inputNum).toString();
     } else if (!rev) {
       if (_operator == '-') {
-        _result =  (_memoryNum - _inputNum).toString();
+        _result = (_memoryNum - _inputNum).toString();
       } else {
         if (_inputNum == 0) {
           _result = 'Error: Division by zero';
@@ -127,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return _result.substring(0, _result.length - 2);
     }
     return _result.replaceAll('.', ',');
-    }
+  }
 
   void _onNumberPressed(String number) {
     setState(() {
@@ -138,13 +148,15 @@ class _MyHomePageState extends State<MyHomePage> {
         _input = number;
         _stage = 1;
       } else if (_stage == 1 || _stage == 3) {
-        if (_input.length >= 15) {
+        if (_input == '0'){
+          _input = number;
+        }else if (_input.length >= 15) {
           return;
         } else {
-        _input += number;
+          _input += number;
         }
       } else if (_stage == 2) {
-        _memory = _input;
+        _memory = _input; // Storing current input number to replace it with the new one
         _input = number;
         _stage = 3;
       }
@@ -156,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_stage == 1 || _stage == 3 || _stage == 0) {
         if (!_input.contains(',')) {
           _input += ',';
-          if (_stage == 0){
+          if (_stage == 0) {
             _stage = 1;
           }
         }
@@ -174,8 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String num = _operation();
         _memory = _input;
         _input = num;
-          _stage = 0;
-
+        _stage = 0;
       });
     } else if (_stage == 1 || _stage == 0) {
       setState(() {
@@ -189,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_stage == 0 || _stage == 1) {
         _operator = operator;
         _stage = 2;
-      } else if (_stage  == 2) {
+      } else if (_stage == 2) {
         _operator = operator;
       } else if (_stage == 3) {
         _input = _operation();
@@ -198,6 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
   }
+
   void _onButtonPressed(String button) {
     if (button == "AC") {
       setState(() {
@@ -218,17 +230,19 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     } else if (button == "⌫") {
       setState(() {
-        if (_stage != 0) {
-          if (_input.length > 1) {
-            _input = _input.substring(0, _input.length - 1);
-          } else {
-            _input = '0';
-            _stage = 0;
-          }
+        if (_stage == 1) {
+          _backspace();
+        } else if (_stage == 2) {
+          _memory = '0';
+          _stage = 1;
+          _backspace();
+        } else if (_stage == 3) {
+          _backspace();
         }
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
