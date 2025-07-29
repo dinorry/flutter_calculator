@@ -92,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _memory = '0';
   int _stage = 0;
   final Color _operandColor = Color(0xFFDC9C63);
+  final Color _specialButtonColor = Color(0xFFFFFFFF);
 
   String _operation([bool rev = false]) {
     String _convertable_input = _input.replaceAll(',', '.');
@@ -122,12 +123,18 @@ class _MyHomePageState extends State<MyHomePage> {
           _result = (_inputNum / _memoryNum).toString();
       }
     }
+    if (_result.substring(_result.length - 2) == '.0') {
+      return _result.substring(0, _result.length - 2);
+    }
     return _result.replaceAll('.', ',');
     }
 
   void _onNumberPressed(String number) {
     setState(() {
-      if (_stage == 0) {
+      if (_input == '0' && _stage == 1) {
+        _input = number;
+        _stage = 1;
+      } else if (_stage == 0) {
         _input = number;
         _stage = 1;
       } else if (_stage == 1 || _stage == 3) {
@@ -209,6 +216,17 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       });
+    } else if (button == "⌫") {
+      setState(() {
+        if (_stage != 0) {
+          if (_input.length > 1) {
+            _input = _input.substring(0, _input.length - 1);
+          } else {
+            _input = '0';
+            _stage = 0;
+          }
+        }
+      });
     }
   }
 
@@ -242,9 +260,9 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisCount: 4,
               physics: NeverScrollableScrollPhysics(),
               children: [
-                CustomTextButton(onPressed: () => _onButtonPressed("AC"), label: "AC",),
-                CustomTextButton(onPressed: () => _onButtonPressed("+/-"), label: "+/-",),
-                CustomTextButton(onPressed: () => _onButtonPressed("%"), label: "%"),
+                CustomTextButton(onPressed: () => _onButtonPressed("AC"), label: "AC", color: _specialButtonColor,),
+                CustomTextButton(onPressed: () => _onButtonPressed("+/-"), label: "+/-", color: _specialButtonColor,),
+                CustomTextButton(onPressed: () => _onButtonPressed("⌫"), label: "⌫", color: _specialButtonColor),
                 CustomTextButton(onPressed: () => _onOperatorPressed("*"), label: "×", color: _operandColor, fontSize: 42,) ,
                 CustomTextButton(onPressed: () => _onNumberPressed("7"), label: "7"),
                 CustomTextButton(onPressed: () => _onNumberPressed("8"), label: "8"),
